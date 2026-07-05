@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Predictor.exe — LaptopOS™</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap');
+
+  :root{
+    --bg-void:#0a0118;
+    --bg-deep:#150a2e;
+    --bg-deep2:#1d0f3d;
+    --neon-pink:#ff2e97;
+    --neon-cyan:#00fff2;
+    --neon-purple:#7b2ff7;
+    --acid:#d4ff00;
+    --text-light:#e8e6f0;
+    --text-dim:#8b85a8;
+    --window-bg:rgba(21,10,46,0.92);
+    --field-bg:#120a26;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+
+  body{
+    font-family:'Space Mono', monospace;
+    color:var(--text-light);
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 10% 10%, rgba(255,46,151,0.12), transparent 40%),
+      radial-gradient(circle at 90% 90%, rgba(0,255,242,0.12), transparent 45%),
+      linear-gradient(180deg, var(--bg-void), var(--bg-deep));
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:5vh 4vw 110px;
+  }
+
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background:repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 3px);
+    z-index:999;
+    mix-blend-mode:overlay;
+  }
+
+  .window{
+    width:min(880px, 100%);
+    background:var(--window-bg);
+    border:1px solid rgba(0,255,242,0.25);
+    border-radius:12px;
+    box-shadow:0 24px 70px rgba(0,0,0,0.6), 0 0 50px rgba(123,47,247,0.15);
+    overflow:hidden;
+    backdrop-filter:blur(6px);
+  }
+
+  .titlebar{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:12px 16px;
+    background:linear-gradient(90deg, var(--bg-deep2), var(--bg-deep));
+    border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+
+  .traffic{display:flex; gap:8px;}
+  .dot{width:12px;height:12px;border-radius:50%; cursor:pointer; transition:transform .15s ease;}
+  .dot:hover{transform:scale(1.2);}
+  .dot.red{background:var(--neon-pink); box-shadow:0 0 8px var(--neon-pink);}
+  .dot.yellow{background:var(--acid); box-shadow:0 0 8px var(--acid);}
+  .dot.green{background:var(--neon-cyan); box-shadow:0 0 8px var(--neon-cyan);}
+
+  .titlebar .name{
+    font-family:'Press Start 2P', monospace;
+    font-size:11px;
+    color:var(--text-dim);
+    flex:1;
+    text-align:center;
+  }
+
+  .titlebar a.back{
+    font-size:11px;
+    color:var(--neon-cyan);
+    text-decoration:none;
+    border:1px solid rgba(0,255,242,0.3);
+    padding:6px 10px;
+    border-radius:6px;
+  }
+  .titlebar a.back:hover{background:rgba(0,255,242,0.1);}
+
+  .content{
+    padding:30px clamp(18px, 4vw, 42px) 38px;
+  }
+
+  .content h1{
+    font-family:'Press Start 2P', monospace;
+    font-size:clamp(16px, 2.6vw, 22px);
+    line-height:1.6;
+    color:var(--neon-cyan);
+    text-shadow:0 0 18px rgba(0,255,242,0.35);
+    margin-bottom:10px;
+  }
+
+  .content .lede{
+    color:var(--text-dim);
+    font-size:13px;
+    line-height:1.8;
+    margin-bottom:30px;
+    max-width:640px;
+  }
+
+  .content .lede strong{color:var(--acid);}
+
+  form{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:22px 26px;
+  }
+
+  @media (max-width:600px){
+    form{grid-template-columns:1fr;}
+  }
+
+  .field{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+
+  .field.span-2{grid-column:span 2;}
+  @media (max-width:600px){.field.span-2{grid-column:span 1;}}
+
+  .field label{
+    font-size:11px;
+    letter-spacing:1px;
+    color:var(--text-light);
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+  }
+
+  .field label .hint{
+    font-size:10px;
+    color:var(--text-dim);
+    font-style:italic;
+  }
+
+  .field select,
+  .field input[type="number"],
+  .field input[type="text"]{
+    background:var(--field-bg);
+    border:1px solid rgba(123,47,247,0.4);
+    color:var(--text-light);
+    font-family:'Space Mono', monospace;
+    font-size:13px;
+    padding:12px 14px;
+    border-radius:8px;
+    outline:none;
+    transition:border-color .2s ease, box-shadow .2s ease;
+    appearance:none;
+    -webkit-appearance:none;
+  }
+
+  .field select{
+    background-image:linear-gradient(45deg, transparent 50%, var(--neon-cyan) 50%), linear-gradient(135deg, var(--neon-cyan) 50%, transparent 50%);
+    background-position:calc(100% - 20px) calc(1em + 4px), calc(100% - 15px) calc(1em + 4px);
+    background-size:5px 5px, 5px 5px;
+    background-repeat:no-repeat;
+  }
+
+  .field select:focus,
+  .field input:focus{
+    border-color:var(--neon-cyan);
+    box-shadow:0 0 0 3px rgba(0,255,242,0.15);
+  }
+
+  .field select option{background:var(--field-bg); color:var(--text-light);}
+
+  /* checkbox styled toggles */
+  .toggle-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:var(--field-bg);
+    border:1px solid rgba(123,47,247,0.4);
+    border-radius:8px;
+    padding:12px 14px;
+  }
+
+  .toggle-row span{font-size:11px; letter-spacing:.5px;}
+
+  .switch{
+    position:relative;
+    width:44px;
+    height:24px;
+    flex-shrink:0;
+  }
+  .switch input{opacity:0; width:0; height:0;}
+  .slider{
+    position:absolute; cursor:pointer; inset:0;
+    background:rgba(255,255,255,0.08);
+    border-radius:20px;
+    transition:.2s;
+  }
+  .slider::before{
+    content:"";
+    position:absolute;
+    height:18px; width:18px;
+    left:3px; top:3px;
+    background:var(--text-dim);
+    border-radius:50%;
+    transition:.2s;
+  }
+  .switch input:checked + .slider{
+    background:rgba(0,255,242,0.25);
+    box-shadow:0 0 10px rgba(0,255,242,0.4) inset;
+  }
+  .switch input:checked + .slider::before{
+    transform:translateX(20px);
+    background:var(--neon-cyan);
+    box-shadow:0 0 8px var(--neon-cyan);
+  }
+
+  .submit-row{
+    grid-column:1 / -1;
+    display:flex;
+    align-items:center;
+    gap:18px;
+    margin-top:8px;
+    flex-wrap:wrap;
+  }
+
+  .submit-btn{
+    font-family:'Press Start 2P', monospace;
+    font-size:12px;
+    color:var(--bg-void);
+    background:linear-gradient(90deg, var(--neon-pink), var(--neon-purple), var(--neon-cyan));
+    background-size:200% auto;
+    border:none;
+    padding:16px 24px;
+    border-radius:8px;
+    cursor:pointer;
+    box-shadow:0 0 24px rgba(255,46,151,0.35);
+    transition:background-position .4s ease, transform .2s ease;
+  }
+  .submit-btn:hover{
+    background-position:right center;
+    transform:translateY(-2px);
+  }
+
+  .submit-note{
+    font-size:11px;
+    color:var(--text-dim);
+    max-width:340px;
+    line-height:1.6;
+  }
+
+  .footer-note{
+    margin-top:26px;
+    font-size:10px;
+    color:var(--text-dim);
+    border-top:1px dashed rgba(255,255,255,0.1);
+    padding-top:14px;
+  }
+</style>
+</head>
+<body>
+
+<div class="window">
+  <div class="titlebar">
+    <div class="traffic">
+      <div class="dot red" title="close" onclick="window.location.href='{{ url_for(\'index\') }}'"></div>
+      <div class="dot yellow" title="minimize" onclick="alert('Minimized. Your budget concerns, however, remain fully maximized.')"></div>
+      <div class="dot green" title="maximize" onclick="alert('Already at maximum overengineering.')"></div>
+    </div>
+    <div class="name">PREDICTOR.EXE</div>
+    <a class="back" href="{{ url_for('index') }}">← desktop</a>
+  </div>
+
+  <div class="content">
+    <h1>LAPTOP PRICE PREDICTOR</h1>
+    <p class="lede">Fill in the specs of the laptop you're pretending you can afford. Our model was trained on
+      <strong>CleanedData.csv</strong>, a dataset that has seen things. It will now judge your choices with
+      cold, mathematical precision.</p>
+
+    <form method="POST" action="{{ url_for('project') }}">
+
+      <div class="field">
+        <label for="company">Brand <span class="hint">who to blame</span></label>
+        <select id="company" name="Company" required>
+          <option value="" disabled selected>Select a brand</option>
+          <option value="Apple">Apple</option>
+          <option value="Dell">Dell</option>
+          <option value="HP">HP</option>
+          <option value="Lenovo">Lenovo</option>
+          <option value="Asus">Asus</option>
+          <option value="Acer">Acer</option>
+          <option value="MSI">MSI</option>
+          <option value="Toshiba">Toshiba</option>
+          <option value="Samsung">Samsung</option>
+          <option value="Razer">Razer</option>
+          <option value="Microsoft">Microsoft</option>
+          <option value="Huawei">Huawei</option>
+          <option value="Xiaomi">Xiaomi</option>
+          <option value="LG">LG</option>
+          <option value="Other">Other / Mystery Brand</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="typename">Type <span class="hint">its personality</span></label>
+        <select id="typename" name="TypeName" required>
+          <option value="" disabled selected>Select a type</option>
+          <option value="Notebook">Notebook</option>
+          <option value="Ultrabook">Ultrabook</option>
+          <option value="Gaming">Gaming</option>
+          <option value="2 in 1 Convertible">2 in 1 Convertible</option>
+          <option value="Workstation">Workstation</option>
+          <option value="Netbook">Netbook</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="ram">RAM (GB) <span class="hint">short-term memory</span></label>
+        <select id="ram" name="Ram" required>
+          <option value="" disabled selected>Select RAM</option>
+          <option value="2">2 GB</option>
+          <option value="4">4 GB</option>
+          <option value="6">6 GB</option>
+          <option value="8">8 GB</option>
+          <option value="12">12 GB</option>
+          <option value="16">16 GB</option>
+          <option value="24">24 GB</option>
+          <option value="32">32 GB</option>
+          <option value="64">64 GB</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="weight">Weight (kg) <span class="hint">arm day included</span></label>
+        <input type="number" id="weight" name="Weight" step="0.01" min="0.5" max="5" placeholder="e.g. 1.83" required>
+      </div>
+
+      <div class="field">
+        <label for="screenres">Screen Resolution <span class="hint">pixels you'll squint at</span></label>
+        <select id="screenres" name="ScreenResolution" required>
+          <option value="" disabled selected>Select resolution</option>
+          <option value="1366x768">1366x768</option>
+          <option value="1600x900">1600x900</option>
+          <option value="1920x1080">1920x1080 (Full HD)</option>
+          <option value="2560x1440">2560x1440 (QHD)</option>
+          <option value="3200x1800">3200x1800</option>
+          <option value="3840x2160">3840x2160 (4K UHD)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="inches">Screen Size (in) <span class="hint">bigger isn't cheaper</span></label>
+        <input type="number" id="inches" name="Inches" step="0.1" min="10" max="18" placeholder="e.g. 15.6" required>
+      </div>
+
+      <div class="field">
+        <label for="cpu">CPU Brand <span class="hint">the brain, allegedly</span></label>
+        <select id="cpu" name="Cpu_brand" required>
+          <option value="" disabled selected>Select CPU brand</option>
+          <option value="Intel Core i3">Intel Core i3</option>
+          <option value="Intel Core i5">Intel Core i5</option>
+          <option value="Intel Core i7">Intel Core i7</option>
+          <option value="Intel Core i9">Intel Core i9</option>
+          <option value="AMD Ryzen">AMD Ryzen</option>
+          <option value="Other Intel Processor">Other Intel Processor</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="gpu">GPU Brand <span class="hint">we're judging this one</span></label>
+        <select id="gpu" name="Gpu_brand" required>
+          <option value="" disabled selected>Select GPU brand</option>
+          <option value="Intel">Intel (it's fine, it's there)</option>
+          <option value="Nvidia">Nvidia (there it is)</option>
+          <option value="AMD">AMD</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="os">Operating System <span class="hint">pick a side</span></label>
+        <select id="os" name="Os" required>
+          <option value="" disabled selected>Select OS</option>
+          <option value="Windows">Windows</option>
+          <option value="macOS">macOS</option>
+          <option value="Linux">Linux</option>
+          <option value="Chrome OS">Chrome OS</option>
+          <option value="No OS">No OS (living dangerously)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="hdd">HDD (GB) <span class="hint">the spinny past</span></label>
+        <select id="hdd" name="HDD">
+          <option value="0" selected>0 GB (no HDD)</option>
+          <option value="500">500 GB</option>
+          <option value="1000">1 TB</option>
+          <option value="2000">2 TB</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="ssd">SSD (GB) <span class="hint">the actual future</span></label>
+        <select id="ssd" name="SSD">
+          <option value="0">0 GB (bold choice)</option>
+          <option value="128">128 GB</option>
+          <option value="256" selected>256 GB</option>
+          <option value="512">512 GB</option>
+          <option value="1000">1 TB</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <div class="toggle-row">
+          <span>Touchscreen</span>
+          <label class="switch">
+            <input type="checkbox" id="touchscreen" name="Touchscreen" value="Yes">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="toggle-row">
+          <span>IPS Panel</span>
+          <label class="switch">
+            <input type="checkbox" id="ips" name="Ips" value="Yes">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="submit-row">
+        <button type="submit" class="submit-btn">Calculate Price (Prepare to Cry)</button>
+        <p class="submit-note">Results are final, mathematically sound, and not open for emotional negotiation.</p>
+      </div>
+
+    </form>
+
+    <p class="footer-note">Form data is submitted via POST and parsed server-side with request.form. Field names are intentionally boring so your Flask route doesn't have to be.</p>
+  </div>
+</div>
+
+</body>
+</html>
