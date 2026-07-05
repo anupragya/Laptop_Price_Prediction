@@ -3,177 +3,157 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Complaints.dept — LaptopOS™</title>
+<title>Complaints — LaptopOS</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
   :root{
-    --bg-void:#0a0118;
-    --bg-deep:#150a2e;
-    --bg-deep2:#1d0f3d;
-    --neon-pink:#ff2e97;
-    --neon-cyan:#00fff2;
-    --neon-purple:#7b2ff7;
-    --acid:#d4ff00;
-    --text-light:#e8e6f0;
-    --text-dim:#8b85a8;
-    --window-bg:rgba(21,10,46,0.92);
-    --field-bg:#120a26;
+    --accent-blue:#0a84ff;
+    --accent-purple:#8b5cf6;
+    --accent-pink:#ec4899;
+    --accent-teal:#06b6d4;
+    --glass-bg:rgba(255,255,255,0.78);
+    --glass-titlebar:rgba(255,255,255,0.55);
+    --glass-border:rgba(255,255,255,0.5);
+    --text-dark:#1b1b1f;
+    --text-muted:#5f6370;
+    --field-bg:rgba(255,255,255,0.9);
+    --field-border:#dfe3ea;
   }
 
   *{margin:0;padding:0;box-sizing:border-box;}
   html,body{height:100%;}
 
   body{
-    font-family:'Space Mono', monospace;
-    color:var(--text-light);
+    font-family:'Inter', 'Segoe UI', system-ui, sans-serif;
+    color:var(--text-dark);
     min-height:100vh;
     background:
-      radial-gradient(circle at 15% 85%, rgba(255,46,151,0.14), transparent 42%),
-      radial-gradient(circle at 85% 15%, rgba(0,255,242,0.12), transparent 45%),
-      linear-gradient(180deg, var(--bg-void), var(--bg-deep));
+      linear-gradient(135deg, rgba(236,72,153,0.85), rgba(139,92,246,0.75) 50%, rgba(6,182,212,0.75)),
+      linear-gradient(135deg, #ec4899, #8b5cf6 50%, #06b6d4);
     display:flex;
     align-items:flex-start;
     justify-content:center;
-    padding:5vh 4vw 110px;
-  }
-
-  body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    background:repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 3px);
-    z-index:999;
-    mix-blend-mode:overlay;
+    padding:5vh 4vw 100px;
   }
 
   .window{
     width:min(680px, 100%);
-    background:var(--window-bg);
-    border:1px solid rgba(255,46,151,0.25);
-    border-radius:12px;
-    box-shadow:0 24px 70px rgba(0,0,0,0.6), 0 0 50px rgba(255,46,151,0.15);
+    background:var(--glass-bg);
+    backdrop-filter:blur(24px) saturate(180%);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid var(--glass-border);
+    border-radius:14px;
+    box-shadow:0 30px 70px rgba(0,0,0,0.35);
     overflow:hidden;
-    backdrop-filter:blur(6px);
   }
 
   .titlebar{
     display:flex;
     align-items:center;
-    gap:14px;
-    padding:12px 16px;
-    background:linear-gradient(90deg, var(--bg-deep2), var(--bg-deep));
-    border-bottom:1px solid rgba(255,255,255,0.06);
+    gap:10px;
+    padding:0 6px 0 16px;
+    height:44px;
+    background:var(--glass-titlebar);
+    border-bottom:1px solid rgba(0,0,0,0.06);
+    border-top:3px solid var(--accent-pink);
   }
 
-  .traffic{display:flex; gap:8px;}
-  .dot{width:12px;height:12px;border-radius:50%; cursor:pointer; transition:transform .15s ease;}
-  .dot:hover{transform:scale(1.2);}
-  .dot.red{background:var(--neon-pink); box-shadow:0 0 8px var(--neon-pink);}
-  .dot.yellow{background:var(--acid); box-shadow:0 0 8px var(--acid);}
-  .dot.green{background:var(--neon-cyan); box-shadow:0 0 8px var(--neon-cyan);}
-
-  .titlebar .name{
-    font-family:'Press Start 2P', monospace;
-    font-size:11px;
-    color:var(--text-dim);
+  .titlebar .app-name{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--text-dark);
     flex:1;
-    text-align:center;
   }
 
-  .titlebar a.back{
-    font-size:11px;
-    color:var(--neon-pink);
-    text-decoration:none;
-    border:1px solid rgba(255,46,151,0.35);
-    padding:6px 10px;
-    border-radius:6px;
+  .titlebar .app-name .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--accent-pink);
   }
-  .titlebar a.back:hover{background:rgba(255,46,151,0.1);}
+
+  .win-controls{display:flex; align-items:stretch; height:100%;}
+
+  .win-btn{
+    width:46px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:transparent;
+    border:none;
+    cursor:pointer;
+    text-decoration:none;
+    color:var(--text-dark);
+    font-size:14px;
+    transition:background .12s ease;
+  }
+  .win-btn:hover{background:rgba(0,0,0,0.06);}
+  .win-btn.close:hover{background:#e81123; color:#fff;}
 
   .term-header{
-    padding:14px 22px;
-    font-size:11px;
-    color:var(--neon-cyan);
-    background:var(--bg-deep);
-    border-bottom:1px solid rgba(255,255,255,0.05);
+    padding:12px 22px;
+    font-size:12px;
+    font-weight:500;
+    color:var(--accent-blue);
+    background:rgba(255,255,255,0.3);
+    border-bottom:1px solid rgba(0,0,0,0.05);
   }
-  .term-header .prompt::before{content:"guest@laptopos:~$ "; color:var(--text-dim);}
+  .term-header .prompt::before{content:"guest@laptopos:~$ "; color:var(--text-muted);}
 
-  .content{
-    padding:28px clamp(18px, 4vw, 38px) 34px;
-  }
+  .content{padding:26px clamp(18px, 4vw, 38px) 34px;}
 
   .content h1{
-    font-family:'Press Start 2P', monospace;
-    font-size:clamp(15px, 2.4vw, 20px);
-    line-height:1.6;
-    color:var(--neon-pink);
-    text-shadow:0 0 16px rgba(255,46,151,0.35);
-    margin-bottom:10px;
+    font-size:clamp(19px, 2.4vw, 24px);
+    font-weight:800;
+    letter-spacing:-0.3px;
+    margin-bottom:8px;
   }
 
   .content .lede{
-    font-size:13px;
-    color:var(--text-dim);
+    font-size:13.5px;
+    color:var(--text-muted);
     line-height:1.8;
     margin-bottom:26px;
   }
 
-  .content .lede strong{color:var(--acid);}
+  .content .lede strong{color:var(--accent-pink);}
 
-  form{
-    display:flex;
-    flex-direction:column;
-    gap:20px;
-  }
+  form{display:flex; flex-direction:column; gap:18px;}
+  .field{display:flex; flex-direction:column; gap:7px;}
 
-  .field{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-  }
-
-  .row-2{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:20px;
-  }
+  .row-2{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
   @media (max-width:520px){.row-2{grid-template-columns:1fr;}}
 
-  .field label{
-    font-size:11px;
-    letter-spacing:1px;
-    color:var(--text-light);
-  }
+  .field label{font-size:12px; font-weight:600; color:var(--text-dark);}
 
   .field input,
   .field select,
   .field textarea{
     background:var(--field-bg);
-    border:1px solid rgba(123,47,247,0.4);
-    color:var(--text-light);
-    font-family:'Space Mono', monospace;
-    font-size:13px;
-    padding:12px 14px;
+    border:1.5px solid var(--field-border);
+    color:var(--text-dark);
+    font-family:'Inter', 'Segoe UI', sans-serif;
+    font-size:13.5px;
+    padding:11px 13px;
     border-radius:8px;
     outline:none;
     resize:vertical;
-    transition:border-color .2s ease, box-shadow .2s ease;
+    transition:border-color .15s ease, box-shadow .15s ease;
   }
 
-  .field textarea{min-height:140px; line-height:1.6;}
+  .field textarea{min-height:130px; line-height:1.6;}
 
   .field input:focus,
   .field select:focus,
   .field textarea:focus{
-    border-color:var(--neon-pink);
-    box-shadow:0 0 0 3px rgba(255,46,151,0.15);
+    border-color:var(--accent-pink);
+    box-shadow:0 0 0 3px rgba(236,72,153,0.18);
   }
 
   .field input::placeholder,
-  .field textarea::placeholder{color:var(--text-dim); opacity:0.8;}
+  .field textarea::placeholder{color:var(--text-muted); opacity:0.8;}
 
   .submit-row{
     display:flex;
@@ -184,35 +164,35 @@
   }
 
   .submit-btn{
-    font-family:'Press Start 2P', monospace;
-    font-size:11px;
-    color:var(--bg-void);
-    background:linear-gradient(90deg, var(--neon-pink), var(--neon-purple));
-    background-size:200% auto;
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    color:#fff;
+    background:linear-gradient(90deg, var(--accent-pink), var(--accent-purple));
     border:none;
-    padding:15px 22px;
-    border-radius:8px;
+    padding:14px 22px;
+    border-radius:9px;
     cursor:pointer;
-    box-shadow:0 0 22px rgba(255,46,151,0.35);
-    transition:background-position .4s ease, transform .2s ease;
+    box-shadow:0 10px 24px rgba(236,72,153,0.3);
+    transition:transform .15s ease, box-shadow .15s ease;
   }
   .submit-btn:hover{
-    background-position:right center;
     transform:translateY(-2px);
+    box-shadow:0 14px 30px rgba(139,92,246,0.35);
   }
 
   .submit-note{
-    font-size:11px;
-    color:var(--text-dim);
+    font-size:11.5px;
+    color:var(--text-muted);
     max-width:300px;
     line-height:1.6;
   }
 
   .footer-note{
-    margin-top:24px;
-    font-size:10px;
-    color:var(--text-dim);
-    border-top:1px dashed rgba(255,255,255,0.1);
+    margin-top:22px;
+    font-size:10.5px;
+    color:var(--text-muted);
+    border-top:1px dashed rgba(0,0,0,0.1);
     padding-top:14px;
     line-height:1.7;
   }
@@ -222,13 +202,12 @@
 
 <div class="window">
   <div class="titlebar">
-    <div class="traffic">
-      <div class="dot red" title="close" onclick="window.location.href='{{ url_for(\'index\') }}'"></div>
-      <div class="dot yellow" title="minimize" onclick="alert('Minimized. Your complaint is still in the queue, right behind everyone else\'s.')"></div>
-      <div class="dot green" title="maximize" onclick="alert('This is as big as complaints get around here.')"></div>
+    <div class="app-name"><span class="dot"></span> Complaints Department</div>
+    <div class="win-controls">
+      <button class="win-btn" type="button" title="minimize" onclick='alert("Minimized. Your complaint is still in the queue, right behind everyone elses.")'>&#8211;</button>
+      <button class="win-btn" type="button" title="maximize" onclick='alert("This is as big as complaints get around here.")'>&#9633;</button>
+      <a class="win-btn close" href="{{ url_for('index') }}" title="close">&#10005;</a>
     </div>
-    <div class="name">COMPLAINTS.DEPT</div>
-    <a class="back" href="{{ url_for('index') }}">← desktop</a>
   </div>
 
   <div class="term-header">
@@ -236,7 +215,7 @@
   </div>
 
   <div class="content">
-    <h1>CONTACT / COMPLAINTS</h1>
+    <h1>Contact / Complaints</h1>
     <p class="lede">Something upset you? The price prediction hurt your feelings? Your GPU got roasted?
       <strong>Good.</strong> Type it all below and our AI will file it appropriately, which is to say,
       into a folder it will probably never open again.</p>

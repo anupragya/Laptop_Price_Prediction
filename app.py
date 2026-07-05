@@ -1,54 +1,43 @@
 import os
 import pandas as pd
 import numpy as np
+import joblib  # Look at you go, reading binary files properly now
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
 # =====================================================================
-# MACHINE LEARNING MODEL PLACEHOLDER
+# SECURE MODEL INITIALIZATION
 # =====================================================================
-# Load your actual pipeline or pickle file here when ready.
-# import pickle
-# with open('your_model.pkl', 'rb') as f:
-#     model = pickle.load(f)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, 'Random_Forest.lb')
 
-def fallback_prediction(features):
-    """
-    Sarcastic dummy model weights to calculate a price because 
-    real math is exhausting in this economy.
-    """
-    # Features sequence: [Company, Inches, ScreenResolution, Cpu, Ram, Memory, Gpu, OpSys]
-    base_price = 150.0
-    price = (
-        base_price + 
-        (features[0] * 12.5) +  # Company
-        (features[1] * 35.0) +  # Inches
-        (features[2] * 45.0) +  # ScreenResolution
-        (features[3] * 8.5)  +  # Cpu
-        (features[4] * 55.0) +  # Ram
-        (features[5] * 15.0) +  # Memory (safely handled if missing)
-        (features[6] * 7.0)  +  # Gpu
-        (features[7] * 22.0)    # OpSys
-    )
-    return round(float(price), 2)
+try:
+    model = joblib.load(MODEL_PATH)
+    print("🤖 System Report: Random Forest model successfully initialized. Ready to crush dreams.")
+except FileNotFoundError:
+    print(f"❌ Critical Error: Could not find model file at {MODEL_PATH}")
+    model = None
+except Exception as e:
+    print(f"❌ Unexpected Loading Error: {str(e)}")
+    model = None
 
 
 # =====================================================================
-# SERVER ROUTES
+# WEB SERVER ROUTES
 # =====================================================================
 
 @app.route('/')
 def index():
-    """Boots up the glorious laptop OS desktop simulation."""
+    """Boots up the modern Windows OS desktop simulation."""
     return render_template('index.html')
 
 
 @app.route('/project', methods=['GET', 'POST'])
 def project():
     """
-    Processes the laptop specs directly from your HTML form mapping.
-    Matches the exact layout seen in your screenshot.
+    Windows Predictor App: Form input handling corresponding exactly 
+    to your CleanedData.csv numerical matrix columns.
     """
     prediction = None
     error_msg = None
@@ -56,71 +45,74 @@ def project():
 
     if request.method == 'POST':
         try:
-            # Helper to securely convert form strings into numerical dataset values
+            # Safely converts blank/empty options to avoid input matrix crashes
             def extract_field(field_name, default=np.nan):
                 val = request.form.get(field_name)
                 return float(val) if val and val.strip() != '' else default
 
-            # Parse inputs matching CleanedData.csv structure & your form fields
+            # Parse inputs matching your dataset columns and frontend layout
             company    = extract_field('Company')
             inches     = extract_field('Inches')
             screen_res = extract_field('ScreenResolution')
             cpu        = extract_field('Cpu')
             ram        = extract_field('Ram')
-            memory     = extract_field('Memory', default=15.0) # Median fallback for missing data
+            memory     = extract_field('Memory', default=15.0)  # Safe dataset fallback for blank rows
             gpu        = extract_field('Gpu')
             opsys      = extract_field('OpSys')
 
-            # Keep values alive in the inputs context to re-populate the form layout
+            # Build dict back to HTML so user selections stay selected after posting
             user_inputs = {
                 'Company': company, 'Inches': inches, 'ScreenResolution': screen_res,
                 'Cpu': cpu, 'Ram': ram, 'Memory': memory, 'Gpu': gpu, 'OpSys': opsys
             }
 
-            # Array sequence alignment: Company, Inches, ScreenResolution, Cpu, Ram, Memory, Gpu, OpSys
+            # Enforce minimal constraints before running calculations
+            if np.isnan(company) or np.isnan(cpu) or np.isnan(ram):
+                raise ValueError("Windows System Alert: Mandatory core hardware fields (Brand, CPU, RAM) are missing.")
+
+            # Compile row feature array mapping to your CleanedData.csv structure
             feature_array = [company, inches, screen_res, cpu, ram, memory, gpu, opsys]
 
-            # Enforce validation so the user doesn't pass empty values to the matrix array
-            if np.isnan(company) or np.isnan(cpu) or np.isnan(ram):
-                raise ValueError("You skipped core components. Even our cynical code needs a Brand, CPU, and RAM to spit out a number.")
-
-            # --- RUN THROUGH DISCRIMINATORY ESTIMATOR ---
-            # if 'model' in globals():
-            #     input_df = pd.DataFrame([feature_array], columns=['Company', 'Inches', 'ScreenResolution', 'Cpu', 'Ram', 'Memory', 'Gpu', 'OpSys'])
-            #     prediction = round(float(model.predict(input_df)[0]), 2)
-            # else:
-            #     prediction = fallback_prediction(feature_array)
-
-            prediction = fallback_prediction(feature_array)
+            if model:
+                # Build a 2D DataFrame with explicit matching features columns for Scikit-Learn
+                input_df = pd.DataFrame([feature_array], columns=[
+                    'Company', 'Inches', 'ScreenResolution', 'Cpu', 'Ram', 'Memory', 'Gpu', 'OpSys'
+                ])
+                
+                # Predict and extract the zero-index float output value
+                raw_pred = model.predict(input_df)[0]
+                prediction = round(float(raw_pred), 2)
+            else:
+                raise RuntimeError("The Random Forest model file is offline. Did you leave it out of the folder again?")
 
         except Exception as e:
-            error_msg = f"Crash Report: {str(e)}"
+            error_msg = f"Application Error: {str(e)}"
 
     return render_template('project.html', prediction=prediction, error=error_msg, inputs=user_inputs)
 
 
 @app.route('/about')
 def about():
-    """Opens up the 'System Manifesto' settings log."""
+    """Windows App Window: System Specification Manifesto/Readme."""
     return render_template('about.html')
 
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
-    """Simulates the standard interactive mail server endpoint."""
+    """Windows App Window: System Mail client route endpoint handler."""
     message_sent = False
     if request.method == 'POST':
         email = request.form.get('email')
         subject = request.form.get('subject')
         message = request.form.get('message')
         
-        # Local pipeline testing output
-        print(f"\n[📥 Message Routed to Black Hole]\nSender: {email}\nRegarding: {subject}\nPayload: {message}\n")
+        # Terminal diagnostics tracking client feedback strings
+        print(f"\n[📥 Message Logged to Windows Outlook Client]\nFrom: {email}\nRegarding: {subject}\nPayload: {message}\n")
         message_sent = True
 
     return render_template('contact.html', success=message_sent)
 
 
 if __name__ == '__main__':
-    # Debug active so changes to your vibrant styles show immediately without server resets
+    # Debug engine left enabled to dynamically catch style updates instantly
     app.run(debug=True, port=5000)

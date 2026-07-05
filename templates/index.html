@@ -3,130 +3,106 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LaptopOS™ — Now With 40% More Judgment</title>
+<title>LaptopOS</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
   :root{
-    --bg-void:#0a0118;
-    --bg-deep:#150a2e;
-    --bg-deep2:#1d0f3d;
-    --neon-pink:#ff2e97;
-    --neon-cyan:#00fff2;
-    --neon-purple:#7b2ff7;
-    --acid:#d4ff00;
-    --text-light:#e8e6f0;
-    --text-dim:#8b85a8;
-    --window-bg:rgba(21,10,46,0.88);
+    --accent-blue:#0a84ff;
+    --accent-purple:#8b5cf6;
+    --accent-pink:#ec4899;
+    --accent-teal:#06b6d4;
+    --glass-bg:rgba(255,255,255,0.62);
+    --glass-bg-strong:rgba(255,255,255,0.8);
+    --glass-border:rgba(255,255,255,0.45);
+    --text-dark:#1b1b1f;
+    --text-muted:#5f6370;
+    --taskbar-bg:rgba(18,18,26,0.55);
   }
 
   *{margin:0;padding:0;box-sizing:border-box;}
-
   html,body{height:100%;}
 
   body{
-    font-family:'Space Mono', monospace;
-    color:var(--text-light);
+    font-family:'Inter', 'Segoe UI', system-ui, sans-serif;
+    color:var(--text-dark);
     min-height:100vh;
-    overflow-x:hidden;
-    background:
-      radial-gradient(circle at 15% 20%, rgba(255,46,151,0.15), transparent 40%),
-      radial-gradient(circle at 85% 80%, rgba(0,255,242,0.12), transparent 45%),
-      linear-gradient(180deg, var(--bg-void) 0%, var(--bg-deep) 100%);
-    position:relative;
-  }
 
-  /* CRT scanline overlay */
-  body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    background:repeating-linear-gradient(
-      0deg,
-      rgba(255,255,255,0.025) 0px,
-      rgba(255,255,255,0.025) 1px,
-      transparent 1px,
-      transparent 3px
-    );
-    z-index:9999;
-    mix-blend-mode:overlay;
-  }
-
-  /* faint grid floor for that retro-desktop feel */
-  .grid-floor{
-    position:fixed;
-    inset:0;
-    z-index:0;
+    /* Swap this out for your own wallpaper whenever you like */
+    background: url("{{ url_for('static', filename='images/my_wallpaper.jpg') }}") no-repeat center center fixed;
+    background-size: cover;
+    background-color:#5b6ee1; /* fallback shown if the image above 404s */
     background-image:
-      linear-gradient(rgba(123,47,247,0.08) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(123,47,247,0.08) 1px, transparent 1px);
-    background-size:40px 40px;
-    pointer-events:none;
+      linear-gradient(135deg, rgba(91,110,225,0.85), rgba(139,92,246,0.75) 45%, rgba(6,182,212,0.7)),
+      url("{{ url_for('static', filename='images/my_wallpaper.jpg') }}");
+
+    position:relative;
+    overflow-x:hidden;
   }
 
   .desktop{
     position:relative;
     z-index:1;
     min-height:100vh;
-    padding:48px 5vw 100px;
+    padding:6vh 5vw 110px;
     display:flex;
     flex-direction:column;
     align-items:center;
   }
 
-  /* Boot banner */
-  .banner{
+  /* Welcome / hero card */
+  .hero{
+    width:min(760px, 100%);
+    background:var(--glass-bg);
+    backdrop-filter:blur(22px) saturate(180%);
+    -webkit-backdrop-filter:blur(22px) saturate(180%);
+    border:1px solid var(--glass-border);
+    border-radius:16px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.25);
+    padding:32px 36px;
     text-align:center;
-    margin-bottom:56px;
-    max-width:820px;
+    margin-bottom:52px;
   }
 
-  .banner .eyebrow{
-    font-family:'Press Start 2P', monospace;
-    font-size:10px;
-    color:var(--neon-cyan);
-    letter-spacing:2px;
+  .hero .eyebrow{
     display:inline-block;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:1.5px;
+    color:#fff;
+    background:linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
     padding:6px 14px;
-    border:1px solid var(--neon-cyan);
-    border-radius:4px;
-    margin-bottom:22px;
-    box-shadow:0 0 12px rgba(0,255,242,0.35);
-    animation:blink-caret 2.4s step-end infinite;
+    border-radius:20px;
+    margin-bottom:16px;
   }
 
-  @keyframes blink-caret{
-    0%,100%{opacity:1;}
-    50%{opacity:0.55;}
-  }
-
-  .banner h1{
-    font-family:'Press Start 2P', monospace;
-    font-size:clamp(22px, 4vw, 42px);
-    line-height:1.5;
-    background:linear-gradient(90deg, var(--neon-pink), var(--neon-purple) 45%, var(--neon-cyan));
+  .hero h1{
+    font-size:clamp(24px, 4vw, 36px);
+    font-weight:800;
+    letter-spacing:-0.5px;
+    margin-bottom:12px;
+    background:linear-gradient(90deg, var(--accent-blue), var(--accent-purple) 55%, var(--accent-pink));
     -webkit-background-clip:text;
     background-clip:text;
     color:transparent;
-    text-shadow:0 0 30px rgba(255,46,151,0.25);
-    margin-bottom:18px;
   }
 
-  .banner p{
-    color:var(--text-dim);
-    font-size:14px;
+  .hero p{
+    color:var(--text-muted);
+    font-size:14.5px;
     line-height:1.7;
+    max-width:560px;
+    margin:0 auto;
   }
 
-  .banner p strong{color:var(--acid);}
+  .hero p strong{color:var(--text-dark);}
 
-  /* Icon grid */
+  /* Desktop icon grid */
   .icon-grid{
     display:grid;
-    grid-template-columns:repeat(3, minmax(150px, 200px));
-    gap:36px;
-    margin-bottom:60px;
+    grid-template-columns:repeat(3, minmax(140px, 180px));
+    gap:28px;
+    margin-bottom:20px;
   }
 
   @media (max-width:640px){
@@ -137,110 +113,57 @@
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:14px;
+    gap:12px;
     text-decoration:none;
-    color:var(--text-light);
-    padding:18px 10px 14px;
-    border-radius:10px;
-    border:1px solid transparent;
-    transition:transform .25s ease, border-color .25s ease, background .25s ease;
-    cursor:pointer;
-    position:relative;
+    color:#fff;
+    padding:18px 10px;
+    border-radius:14px;
+    transition:background .2s ease, transform .2s ease;
+  }
+
+  .icon:hover, .icon:focus-visible{
+    background:rgba(255,255,255,0.18);
+    transform:translateY(-4px);
+    outline:none;
   }
 
   .icon .glyph{
-    width:74px;
-    height:74px;
+    width:64px;
+    height:64px;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:34px;
+    font-size:28px;
     border-radius:16px;
-    background:linear-gradient(145deg, var(--bg-deep2), var(--bg-void));
-    border:2px solid var(--neon-purple);
-    box-shadow:0 0 0 rgba(0,255,242,0);
-    transition:box-shadow .25s ease, border-color .25s ease, transform .25s ease;
+    background:var(--glass-bg-strong);
+    backdrop-filter:blur(10px);
+    box-shadow:0 8px 24px rgba(0,0,0,0.2);
+    border:1px solid var(--glass-border);
+    transition:box-shadow .2s ease, transform .2s ease;
   }
 
+  .icon:hover .glyph{
+    box-shadow:0 10px 28px rgba(0,0,0,0.3), 0 0 0 3px var(--icon-accent, var(--accent-blue));
+  }
+
+  .icon:nth-child(1){--icon-accent:var(--accent-teal);}
+  .icon:nth-child(2){--icon-accent:var(--accent-purple);}
+  .icon:nth-child(3){--icon-accent:var(--accent-pink);}
+
   .icon .label{
-    font-family:'Press Start 2P', monospace;
-    font-size:10px;
+    font-size:13px;
+    font-weight:600;
     text-align:center;
-    line-height:1.6;
-    color:var(--text-light);
+    line-height:1.4;
+    text-shadow:0 1px 6px rgba(0,0,0,0.35);
   }
 
   .icon .sublabel{
     font-size:11px;
-    color:var(--text-dim);
+    font-weight:400;
+    color:rgba(255,255,255,0.85);
     text-align:center;
-  }
-
-  .icon:hover{
-    transform:translateY(-6px);
-    background:rgba(123,47,247,0.08);
-    border-color:rgba(0,255,242,0.25);
-  }
-
-  .icon:hover .glyph{
-    border-color:var(--neon-cyan);
-    box-shadow:0 0 26px rgba(0,255,242,0.55);
-    transform:scale(1.05) rotate(-2deg);
-  }
-
-  .icon:nth-child(1) .glyph{border-color:var(--neon-pink);}
-  .icon:nth-child(1):hover .glyph{box-shadow:0 0 26px rgba(255,46,151,0.55); border-color:var(--neon-pink);}
-  .icon:nth-child(3) .glyph{border-color:var(--acid);}
-  .icon:nth-child(3):hover .glyph{box-shadow:0 0 26px rgba(212,255,0,0.5); border-color:var(--acid);}
-
-  /* Fake "window preview" widget, purely decorative signature element */
-  .preview-window{
-    width:min(680px, 92vw);
-    background:var(--window-bg);
-    border:1px solid rgba(0,255,242,0.25);
-    border-radius:10px;
-    box-shadow:0 20px 60px rgba(0,0,0,0.55), 0 0 40px rgba(123,47,247,0.15);
-    overflow:hidden;
-    backdrop-filter:blur(6px);
-  }
-
-  .preview-titlebar{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding:10px 14px;
-    background:linear-gradient(90deg, var(--bg-deep2), var(--bg-deep));
-    border-bottom:1px solid rgba(255,255,255,0.06);
-  }
-
-  .dot{width:11px;height:11px;border-radius:50%;}
-  .dot.red{background:var(--neon-pink); box-shadow:0 0 8px var(--neon-pink);}
-  .dot.yellow{background:var(--acid); box-shadow:0 0 8px var(--acid);}
-  .dot.green{background:var(--neon-cyan); box-shadow:0 0 8px var(--neon-cyan);}
-
-  .preview-titlebar span{
-    margin-left:10px;
-    font-size:11px;
-    color:var(--text-dim);
-    font-family:'Space Mono', monospace;
-  }
-
-  .preview-body{
-    padding:22px 24px;
-    font-size:13px;
-    line-height:1.8;
-    color:var(--text-dim);
-  }
-
-  .preview-body .prompt{color:var(--neon-cyan);}
-  .preview-body .prompt::before{content:"> ";}
-  .caret{
-    display:inline-block;
-    width:8px;height:14px;
-    background:var(--acid);
-    vertical-align:middle;
-    animation:blink-caret 1s step-end infinite;
-    margin-left:2px;
+    text-shadow:0 1px 4px rgba(0,0,0,0.3);
   }
 
   /* Taskbar */
@@ -249,147 +172,153 @@
     bottom:0;
     left:0;
     right:0;
-    height:58px;
-    background:rgba(10,1,24,0.92);
-    border-top:1px solid rgba(0,255,242,0.2);
-    backdrop-filter:blur(10px);
+    height:56px;
+    background:var(--taskbar-bg);
+    backdrop-filter:blur(24px) saturate(180%);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    border-top:1px solid rgba(255,255,255,0.12);
     display:flex;
     align-items:center;
-    justify-content:space-between;
-    padding:0 18px;
+    padding:0 14px;
     z-index:1000;
+    gap:14px;
   }
 
   .start-btn{
-    font-family:'Press Start 2P', monospace;
-    font-size:10px;
-    color:var(--bg-void);
-    background:linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+    display:flex;
+    align-items:center;
+    gap:9px;
+    background:transparent;
     border:none;
-    padding:12px 16px;
-    border-radius:6px;
+    color:#fff;
+    font-family:inherit;
+    font-size:13px;
+    font-weight:600;
+    padding:9px 14px;
+    border-radius:8px;
     cursor:pointer;
-    box-shadow:0 0 16px rgba(0,255,242,0.4);
-    transition:transform .2s ease;
+    transition:background .15s ease;
   }
-  .start-btn:hover{transform:translateY(-2px);}
+  .start-btn:hover{background:rgba(255,255,255,0.14);}
+
+  .start-btn .logo{
+    width:18px;
+    height:18px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    grid-template-rows:1fr 1fr;
+    gap:2px;
+  }
+  .start-btn .logo span{
+    border-radius:2px;
+  }
+  .start-btn .logo span:nth-child(1){background:var(--accent-blue);}
+  .start-btn .logo span:nth-child(2){background:var(--accent-teal);}
+  .start-btn .logo span:nth-child(3){background:var(--accent-purple);}
+  .start-btn .logo span:nth-child(4){background:var(--accent-pink);}
 
   .task-apps{
     display:flex;
-    gap:10px;
+    gap:8px;
     flex:1;
     justify-content:center;
     flex-wrap:wrap;
   }
 
   .task-apps .pill{
-    font-size:11px;
-    color:var(--text-dim);
-    border:1px solid rgba(255,255,255,0.1);
-    padding:8px 14px;
-    border-radius:20px;
     display:flex;
     align-items:center;
-    gap:6px;
+    gap:7px;
+    font-size:12px;
+    font-weight:500;
+    color:rgba(255,255,255,0.9);
+    padding:8px 14px;
+    border-radius:8px;
+    background:rgba(255,255,255,0.06);
   }
 
   .task-apps .pill .blip{
     width:6px;height:6px;border-radius:50%;
-    background:var(--neon-cyan);
-    box-shadow:0 0 6px var(--neon-cyan);
-  }
-
-  .clock-box{
-    font-family:'Press Start 2P', monospace;
-    font-size:11px;
-    color:var(--acid);
-    text-align:right;
-    line-height:1.4;
-    white-space:nowrap;
-  }
-
-  .clock-box .date{
-    display:block;
-    font-family:'Space Mono', monospace;
-    font-size:10px;
-    color:var(--text-dim);
-    margin-top:4px;
+    background:var(--accent-teal);
   }
 
   @media (max-width:640px){
     .task-apps{display:none;}
   }
+
+  .clock-box{
+    font-size:12.5px;
+    font-weight:600;
+    color:#fff;
+    text-align:right;
+    line-height:1.3;
+    white-space:nowrap;
+  }
+
+  .clock-box .date{
+    display:block;
+    font-size:10.5px;
+    font-weight:400;
+    color:rgba(255,255,255,0.75);
+    margin-top:2px;
+  }
 </style>
 </head>
 <body>
 
-<div class="grid-floor"></div>
-
 <div class="desktop">
 
-  <div class="banner">
-    <span class="eyebrow">SYSTEM BOOTED · JUDGMENT.EXE LOADED</span>
-    <h1>WELCOME TO LAPTOPOS™</h1>
-    <p>An operating system for one purpose only: telling you exactly how much your dream laptop costs,
-      and exactly how far that is from your budget. <strong>Double-click responsibly.</strong></p>
+  <div class="hero">
+    <span class="eyebrow">SYSTEM READY · JUDGMENT MODULE ONLINE</span>
+    <h1>Welcome to LaptopOS</h1>
+    <p>An operating system with exactly one function: telling you what your dream laptop
+      actually costs. <strong>Spoiler — it's more than you budgeted.</strong> Pick an app below to begin.</p>
   </div>
 
   <div class="icon-grid">
 
     <a href="{{ url_for('project') }}" class="icon">
       <div class="glyph">💸</div>
-      <div class="label">PRICE<br>PREDICTOR</div>
+      <div class="label">Price Predictor</div>
       <div class="sublabel">run the model</div>
     </a>
 
     <a href="{{ url_for('about') }}" class="icon">
       <div class="glyph">🗂️</div>
-      <div class="label">ABOUT<br>THIS MESS</div>
+      <div class="label">About</div>
       <div class="sublabel">system info</div>
     </a>
 
     <a href="{{ url_for('contact') }}" class="icon">
       <div class="glyph">📡</div>
-      <div class="label">COMPLAINTS<br>DEPT.</div>
+      <div class="label">Complaints</div>
       <div class="sublabel">yell at us</div>
     </a>
 
   </div>
 
-  <div class="preview-window">
-    <div class="preview-titlebar">
-      <div class="dot red"></div>
-      <div class="dot yellow"></div>
-      <div class="dot green"></div>
-      <span>terminal — laptopos — 80x10</span>
-    </div>
-    <div class="preview-body">
-      <p><span class="prompt">status</span> — all systems judgmental and operational.</p>
-      <p><span class="prompt">tip</span> — the icons above are not decorative, they are load-bearing.</p>
-      <p><span class="prompt">next</span> — open PRICE PREDICTOR to begin your emotional damage<span class="caret"></span></p>
-    </div>
-  </div>
-
 </div>
 
 <div class="taskbar">
-  <button class="start-btn" type="button" onclick="alert('There is no start menu. There was never a start menu. Click an icon like everyone else.')">☰ START</button>
+  <button class="start-btn" type="button" onclick='alert("There is no Start menu. There never was. Click an icon like a functioning adult.")'>
+    <span class="logo"><span></span><span></span><span></span><span></span></span>
+    Start
+  </button>
   <div class="task-apps">
-    <div class="pill"><span class="blip"></span> Predictor.exe</div>
-    <div class="pill"><span class="blip"></span> About.sys</div>
-    <div class="pill"><span class="blip"></span> Complaints.dept</div>
+    <div class="pill"><span class="blip"></span> Predictor</div>
+    <div class="pill"><span class="blip"></span> About</div>
+    <div class="pill"><span class="blip"></span> Complaints</div>
   </div>
   <div class="clock-box" id="clock">
-    00:00:00
-    <span class="date" id="dateline">loading date...</span>
+    00:00 <span class="date" id="dateline">loading date...</span>
   </div>
 </div>
 
 <script>
   function tick(){
     const now = new Date();
-    const time = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-    const date = now.toLocaleDateString([], {weekday:'short', month:'short', day:'numeric', year:'numeric'});
+    const time = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    const date = now.toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'});
     document.getElementById('clock').childNodes[0].textContent = time + ' ';
     document.getElementById('dateline').textContent = date;
   }

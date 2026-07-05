@@ -3,149 +3,148 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Predictor.exe — LaptopOS™</title>
+<title>Price Predictor — LaptopOS</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
   :root{
-    --bg-void:#0a0118;
-    --bg-deep:#150a2e;
-    --bg-deep2:#1d0f3d;
-    --neon-pink:#ff2e97;
-    --neon-cyan:#00fff2;
-    --neon-purple:#7b2ff7;
-    --acid:#d4ff00;
-    --text-light:#e8e6f0;
-    --text-dim:#8b85a8;
-    --window-bg:rgba(21,10,46,0.92);
-    --field-bg:#120a26;
+    --accent-blue:#0a84ff;
+    --accent-purple:#8b5cf6;
+    --accent-pink:#ec4899;
+    --accent-teal:#06b6d4;
+    --glass-bg:rgba(255,255,255,0.78);
+    --glass-titlebar:rgba(255,255,255,0.55);
+    --glass-border:rgba(255,255,255,0.5);
+    --text-dark:#1b1b1f;
+    --text-muted:#5f6370;
+    --field-bg:rgba(255,255,255,0.9);
+    --field-border:#dfe3ea;
   }
 
   *{margin:0;padding:0;box-sizing:border-box;}
   html,body{height:100%;}
 
   body{
-    font-family:'Space Mono', monospace;
-    color:var(--text-light);
+    font-family:'Inter', 'Segoe UI', system-ui, sans-serif;
+    color:var(--text-dark);
     min-height:100vh;
     background:
-      radial-gradient(circle at 10% 10%, rgba(255,46,151,0.12), transparent 40%),
-      radial-gradient(circle at 90% 90%, rgba(0,255,242,0.12), transparent 45%),
-      linear-gradient(180deg, var(--bg-void), var(--bg-deep));
+      linear-gradient(135deg, rgba(91,110,225,0.9), rgba(139,92,246,0.8) 45%, rgba(6,182,212,0.75)),
+      linear-gradient(135deg, #5b6ee1, #8b5cf6 55%, #06b6d4);
     display:flex;
     align-items:flex-start;
     justify-content:center;
-    padding:5vh 4vw 110px;
-  }
-
-  body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    background:repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 3px);
-    z-index:999;
-    mix-blend-mode:overlay;
+    padding:5vh 4vw 100px;
   }
 
   .window{
     width:min(880px, 100%);
-    background:var(--window-bg);
-    border:1px solid rgba(0,255,242,0.25);
-    border-radius:12px;
-    box-shadow:0 24px 70px rgba(0,0,0,0.6), 0 0 50px rgba(123,47,247,0.15);
+    background:var(--glass-bg);
+    backdrop-filter:blur(24px) saturate(180%);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid var(--glass-border);
+    border-radius:14px;
+    box-shadow:0 30px 70px rgba(0,0,0,0.35);
     overflow:hidden;
-    backdrop-filter:blur(6px);
   }
 
   .titlebar{
     display:flex;
     align-items:center;
-    gap:14px;
-    padding:12px 16px;
-    background:linear-gradient(90deg, var(--bg-deep2), var(--bg-deep));
-    border-bottom:1px solid rgba(255,255,255,0.06);
+    gap:10px;
+    padding:0 6px 0 16px;
+    height:44px;
+    background:var(--glass-titlebar);
+    border-bottom:1px solid rgba(0,0,0,0.06);
+    border-top:3px solid var(--accent-blue);
   }
 
-  .traffic{display:flex; gap:8px;}
-  .dot{width:12px;height:12px;border-radius:50%; cursor:pointer; transition:transform .15s ease;}
-  .dot:hover{transform:scale(1.2);}
-  .dot.red{background:var(--neon-pink); box-shadow:0 0 8px var(--neon-pink);}
-  .dot.yellow{background:var(--acid); box-shadow:0 0 8px var(--acid);}
-  .dot.green{background:var(--neon-cyan); box-shadow:0 0 8px var(--neon-cyan);}
-
-  .titlebar .name{
-    font-family:'Press Start 2P', monospace;
-    font-size:11px;
-    color:var(--text-dim);
+  .titlebar .app-name{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--text-dark);
     flex:1;
-    text-align:center;
   }
 
-  .titlebar a.back{
-    font-size:11px;
-    color:var(--neon-cyan);
-    text-decoration:none;
-    border:1px solid rgba(0,255,242,0.3);
-    padding:6px 10px;
-    border-radius:6px;
+  .titlebar .app-name .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--accent-blue);
   }
-  .titlebar a.back:hover{background:rgba(0,255,242,0.1);}
+
+  .win-controls{
+    display:flex;
+    align-items:stretch;
+    height:100%;
+  }
+
+  .win-btn{
+    width:46px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:transparent;
+    border:none;
+    cursor:pointer;
+    text-decoration:none;
+    color:var(--text-dark);
+    font-size:14px;
+    transition:background .12s ease;
+  }
+  .win-btn:hover{background:rgba(0,0,0,0.06);}
+  .win-btn.close:hover{background:#e81123; color:#fff;}
 
   .content{
     padding:30px clamp(18px, 4vw, 42px) 38px;
   }
 
   .content h1{
-    font-family:'Press Start 2P', monospace;
-    font-size:clamp(16px, 2.6vw, 22px);
-    line-height:1.6;
-    color:var(--neon-cyan);
-    text-shadow:0 0 18px rgba(0,255,242,0.35);
-    margin-bottom:10px;
+    font-size:clamp(20px, 2.6vw, 26px);
+    font-weight:800;
+    letter-spacing:-0.3px;
+    color:var(--text-dark);
+    margin-bottom:8px;
   }
 
   .content .lede{
-    color:var(--text-dim);
-    font-size:13px;
-    line-height:1.8;
-    margin-bottom:30px;
+    color:var(--text-muted);
+    font-size:13.5px;
+    line-height:1.75;
+    margin-bottom:28px;
     max-width:640px;
   }
 
-  .content .lede strong{color:var(--acid);}
+  .content .lede strong{color:var(--accent-purple);}
 
   form{
     display:grid;
     grid-template-columns:repeat(2, 1fr);
-    gap:22px 26px;
+    gap:20px 24px;
   }
 
   @media (max-width:600px){
     form{grid-template-columns:1fr;}
   }
 
-  .field{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-  }
-
+  .field{display:flex; flex-direction:column; gap:7px;}
   .field.span-2{grid-column:span 2;}
   @media (max-width:600px){.field.span-2{grid-column:span 1;}}
 
   .field label{
-    font-size:11px;
-    letter-spacing:1px;
-    color:var(--text-light);
+    font-size:12px;
+    font-weight:600;
+    color:var(--text-dark);
     display:flex;
     justify-content:space-between;
     align-items:baseline;
   }
 
   .field label .hint{
-    font-size:10px;
-    color:var(--text-dim);
+    font-size:10.5px;
+    font-weight:400;
+    color:var(--text-muted);
     font-style:italic;
   }
 
@@ -153,56 +152,48 @@
   .field input[type="number"],
   .field input[type="text"]{
     background:var(--field-bg);
-    border:1px solid rgba(123,47,247,0.4);
-    color:var(--text-light);
-    font-family:'Space Mono', monospace;
-    font-size:13px;
-    padding:12px 14px;
+    border:1.5px solid var(--field-border);
+    color:var(--text-dark);
+    font-family:'Inter', 'Segoe UI', sans-serif;
+    font-size:13.5px;
+    padding:11px 13px;
     border-radius:8px;
     outline:none;
-    transition:border-color .2s ease, box-shadow .2s ease;
+    transition:border-color .15s ease, box-shadow .15s ease;
     appearance:none;
     -webkit-appearance:none;
   }
 
   .field select{
-    background-image:linear-gradient(45deg, transparent 50%, var(--neon-cyan) 50%), linear-gradient(135deg, var(--neon-cyan) 50%, transparent 50%);
-    background-position:calc(100% - 20px) calc(1em + 4px), calc(100% - 15px) calc(1em + 4px);
+    background-image:linear-gradient(45deg, transparent 50%, var(--accent-blue) 50%), linear-gradient(135deg, var(--accent-blue) 50%, transparent 50%);
+    background-position:calc(100% - 20px) calc(1em + 2px), calc(100% - 15px) calc(1em + 2px);
     background-size:5px 5px, 5px 5px;
     background-repeat:no-repeat;
   }
 
   .field select:focus,
   .field input:focus{
-    border-color:var(--neon-cyan);
-    box-shadow:0 0 0 3px rgba(0,255,242,0.15);
+    border-color:var(--accent-blue);
+    box-shadow:0 0 0 3px rgba(10,132,255,0.18);
   }
 
-  .field select option{background:var(--field-bg); color:var(--text-light);}
-
-  /* checkbox styled toggles */
   .toggle-row{
     display:flex;
     align-items:center;
     justify-content:space-between;
     background:var(--field-bg);
-    border:1px solid rgba(123,47,247,0.4);
+    border:1.5px solid var(--field-border);
     border-radius:8px;
-    padding:12px 14px;
+    padding:11px 13px;
   }
 
-  .toggle-row span{font-size:11px; letter-spacing:.5px;}
+  .toggle-row span{font-size:13px; font-weight:500;}
 
-  .switch{
-    position:relative;
-    width:44px;
-    height:24px;
-    flex-shrink:0;
-  }
+  .switch{position:relative; width:42px; height:24px; flex-shrink:0;}
   .switch input{opacity:0; width:0; height:0;}
   .slider{
     position:absolute; cursor:pointer; inset:0;
-    background:rgba(255,255,255,0.08);
+    background:#d7dbe3;
     border-radius:20px;
     transition:.2s;
   }
@@ -211,59 +202,53 @@
     position:absolute;
     height:18px; width:18px;
     left:3px; top:3px;
-    background:var(--text-dim);
+    background:#fff;
     border-radius:50%;
+    box-shadow:0 1px 3px rgba(0,0,0,0.25);
     transition:.2s;
   }
-  .switch input:checked + .slider{
-    background:rgba(0,255,242,0.25);
-    box-shadow:0 0 10px rgba(0,255,242,0.4) inset;
-  }
-  .switch input:checked + .slider::before{
-    transform:translateX(20px);
-    background:var(--neon-cyan);
-    box-shadow:0 0 8px var(--neon-cyan);
-  }
+  .switch input:checked + .slider{background:var(--accent-blue);}
+  .switch input:checked + .slider::before{transform:translateX(18px);}
 
   .submit-row{
     grid-column:1 / -1;
     display:flex;
     align-items:center;
     gap:18px;
-    margin-top:8px;
+    margin-top:6px;
     flex-wrap:wrap;
   }
 
   .submit-btn{
-    font-family:'Press Start 2P', monospace;
-    font-size:12px;
-    color:var(--bg-void);
-    background:linear-gradient(90deg, var(--neon-pink), var(--neon-purple), var(--neon-cyan));
-    background-size:200% auto;
+    font-family:inherit;
+    font-size:13.5px;
+    font-weight:700;
+    color:#fff;
+    background:linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
     border:none;
-    padding:16px 24px;
-    border-radius:8px;
+    padding:14px 22px;
+    border-radius:9px;
     cursor:pointer;
-    box-shadow:0 0 24px rgba(255,46,151,0.35);
-    transition:background-position .4s ease, transform .2s ease;
+    box-shadow:0 10px 24px rgba(10,132,255,0.3);
+    transition:transform .15s ease, box-shadow .15s ease;
   }
   .submit-btn:hover{
-    background-position:right center;
     transform:translateY(-2px);
+    box-shadow:0 14px 30px rgba(139,92,246,0.35);
   }
 
   .submit-note{
-    font-size:11px;
-    color:var(--text-dim);
-    max-width:340px;
+    font-size:11.5px;
+    color:var(--text-muted);
+    max-width:320px;
     line-height:1.6;
   }
 
   .footer-note{
     margin-top:26px;
-    font-size:10px;
-    color:var(--text-dim);
-    border-top:1px dashed rgba(255,255,255,0.1);
+    font-size:10.5px;
+    color:var(--text-muted);
+    border-top:1px dashed rgba(0,0,0,0.1);
     padding-top:14px;
   }
 </style>
@@ -272,17 +257,16 @@
 
 <div class="window">
   <div class="titlebar">
-    <div class="traffic">
-      <div class="dot red" title="close" onclick="window.location.href='{{ url_for(\'index\') }}'"></div>
-      <div class="dot yellow" title="minimize" onclick="alert('Minimized. Your budget concerns, however, remain fully maximized.')"></div>
-      <div class="dot green" title="maximize" onclick="alert('Already at maximum overengineering.')"></div>
+    <div class="app-name"><span class="dot"></span> Price Predictor</div>
+    <div class="win-controls">
+      <button class="win-btn" type="button" title="minimize" onclick='alert("Minimized. Your budget concerns, however, remain fully maximized.")'>&#8211;</button>
+      <button class="win-btn" type="button" title="maximize" onclick='alert("This window is already at maximum overengineering.")'>&#9633;</button>
+      <a class="win-btn close" href="{{ url_for('index') }}" title="close">&#10005;</a>
     </div>
-    <div class="name">PREDICTOR.EXE</div>
-    <a class="back" href="{{ url_for('index') }}">← desktop</a>
   </div>
 
   <div class="content">
-    <h1>LAPTOP PRICE PREDICTOR</h1>
+    <h1>Laptop Price Predictor</h1>
     <p class="lede">Fill in the specs of the laptop you're pretending you can afford. Our model was trained on
       <strong>CleanedData.csv</strong>, a dataset that has seen things. It will now judge your choices with
       cold, mathematical precision.</p>
